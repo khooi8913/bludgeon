@@ -20,6 +20,8 @@ class BludgeonOptions : public ParserOptions {
     // the current version of the compiler
     cstring compiler_version;
     cstring seed;
+    // name of the output json file
+    cstring output_json;
 };
 
 /// A compilation context which exposes compiler options.

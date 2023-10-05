@@ -20,7 +20,7 @@
 #include "scope.h"
 
 namespace CODEGEN {
-void gen_p4_code(cstring output_file, cstring target) {
+void gen_p4_code(cstring output_file, cstring output_json, cstring target) {
     std::ostream *ostream = openFile(output_file, false);
     P4Scope::start_local_scope();
 
@@ -44,6 +44,7 @@ void gen_p4_code(cstring output_file, cstring target) {
     // output to the file
     P4::ToP4 top4(ostream, false);
     program->apply(top4);
+    JSONGenerator(*openFile(output_json, true), true) << program << std::endl;
     ostream->flush();
     P4Scope::end_local_scope();
 }
@@ -72,11 +73,23 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
+    // use a default name if no specific output name is provided
+    if (options.output_json == nullptr) {
+        options.output_json = "out.json";
+    }
+
     auto ostream = openFile(options.output_file, false);
     if (ostream == nullptr) {
         ::error("must have --output [file]");
         exit(EXIT_FAILURE);
     }
+
+    auto ostream2 = openFile(options.output_json, false);
+    if (ostream2 == nullptr) {
+        ::error("must have --json [file]");
+        exit(EXIT_FAILURE);
+    }
+
     uint64_t seed;
     if (options.seed) {
         std::cerr << "Using provided seed.\n";
@@ -94,7 +107,7 @@ int main(int argc, char **argv) {
     }
     std::cerr << "Seed:" << seed << "\n";
     CODEGEN::set_seed(seed);
-    CODEGEN::gen_p4_code(options.output_file, options.arch);
+    CODEGEN::gen_p4_code(options.output_file, options.output_json, options.arch);
 
     return EXIT_SUCCESS;
 }

@@ -27,6 +27,13 @@ BludgeonOptions::BludgeonOptions() {
         },
         "The seed for the random program. If no seed is provided we generate "
         "our own.");
+    registerOption(
+        "--json", "json",
+        [this](const char *arg) {
+            output_json = arg;
+            return true;
+        },
+        "The name of the output JSON file. Default is \"out.json\".");
 }
 
 } // namespace CODEGEN
